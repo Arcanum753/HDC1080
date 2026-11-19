@@ -110,8 +110,6 @@ void CLASS_MODULE_HDC1080::handleInfo(AsyncWebServerRequest *request) {
     String values = "";
     char buf[16];
 
-    values += "hdc_available|" + String(_available ? "available" : "not available") + "|div\n";
-
     snprintf(buf, sizeof(buf), "0x%02X", _addr);
     values += "hdc_addr|" + String(buf) + "|div\n";
 
