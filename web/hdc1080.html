@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HDC1080</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <markup>./page_head.html</markup>
+    <h2 class="title" style="background: #B5651D"> <span id="devicename"></span> HDC1080 — температура и влажность</h2>
+
+    <!-- Описание -->
+    <div class="content" style="text-align: center;">
+        <table class="global_table_style">
+            <tr><th>Описание / Description</th></tr>
+            <tr><td style="text-align: left; padding: 8px;">
+                <b>RU:</b> Датчик температуры и относительной влажности HDC1080 (I2C, адрес
+                0x40). Страница только показывает значения; настройки не редактируются.<br>
+                <b>EN:</b> HDC1080 temperature and relative humidity sensor (I2C, address 0x40).
+                This page only displays readings; no settings are edited.<br>
+                <small><i>(AI generated)</i></small>
+            </td></tr>
+        </table>
+    </div>
+
+    <!-- Показания -->
+    <div class="content" style="text-align: center;">
+        <table class="global_table_style">
+            <tr><th colspan="2">Показания / Reading</th></tr>
+            <tr><td colspan="2" style="padding: 12px; font-size: 1.5em; font-weight: bold;">
+                <div style="font-size: 0.55em; font-weight: normal; color: #555;">Температура</div>
+                <span id="hdc_temp">--</span>
+            </td></tr>
+            <tr><td class="label">Состояние</td><td><span id="hdc_available">--</span></td></tr>
+            <tr><td class="label">Адрес</td><td><span id="hdc_addr">--</span></td></tr>
+            <tr><td class="label">Влажность</td><td><span id="hdc_hum">--</span></td></tr>
+            <tr><td class="label">Manufacturer ID</td><td><span id="hdc_mfr">--</span></td></tr>
+            <tr><td class="label">Device ID</td><td><span id="hdc_dev">--</span></td></tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        Module version: <span id="hdcversion"> </span> &nbsp;|&nbsp;
+        Build: <span id="hdcgentime"> </span> <br>
+    </div>
+
+    <markup>./page_bottom.html</markup>
+    <script src="GetJson.js" defer></script>
+    <script src="GetMarkup.js" defer></script>
+    <script>
+        async function updateRead() {
+            try {
+                const resp = await fetch('/hdc1080/read');
+                const text = await resp.text();
+                const lines = text.split('\n');
+                for (const line of lines) {
+                    const parts = line.split('|');
+                    if (parts.length >= 2) {
+                        const el = document.getElementById(parts[0]);
+                        if (el) { el.innerText = parts[1]; }
+                    }
+                }
+            } catch (e) {}
+        }
+        window.onload = function() {
+            setTimeout(() => {
+                ApplyCVT("/system/version")
+                    .then(() => ApplyCVT("/hdc1080/info"))
+                    .then(() => ApplyCVT("/hdc1080/ver"));
+            }, 500);
+            updateRead();
+            setInterval(updateRead, 1000);
+        };
+    </script>
+</body>
+</html>
